@@ -269,6 +269,8 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .sleigh { display: none; }
 }
+.egg-stat { margin: 8px 0 0; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); background: color-mix(in srgb, var(--gold) 28%, var(--surface)); border: 1.5px dashed var(--gold); animation: cardIn .5s var(--ease) both; }
+.egg-stat[hidden] { display: none; }
 </style>
 
 </head>
@@ -294,6 +296,7 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
     <div class="head-text">
       <p class="eyebrow">Fête de Noël · Listes de cadeaux</p>
       <h1 id="title" aria-label="Les souhaits de Noël"></h1>
+      <p class="egg-stat" id="egg-stat" hidden></p>
     </div>
   </header>
   <p class="lede">Le tirage est fait. Écris ici les cadeaux qui te feraient plaisir, du plus désiré au moins désiré. Tout le monde peut lire toutes les listes.</p>
@@ -771,7 +774,7 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
     if (!reduced) burst(8);
     clearTimeout(hitTimer);
     hitTimer = setTimeout(() => { hits = 0; setStarCount(0); star.style.setProperty('--glow', '0'); star.classList.remove('hit'); }, 2200);
-    if (hits >= 5) { hits = 0; clearTimeout(hitTimer); star.classList.remove('hit'); star.style.setProperty('--glow', '0'); setTimeout(() => setStarCount(0), 900); showEgg(); }
+    if (hits >= 5) { hits = 0; clearTimeout(hitTimer); star.classList.remove('hit'); star.style.setProperty('--glow', '0'); setTimeout(() => setStarCount(0), 900); showEgg(); reportFound(); }
   });
   const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']; let kpos = 0;
   addEventListener('keydown', (e) => {
@@ -890,7 +893,32 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
         return res;
       },
       check: (id, pin) => rpc('wl_check', { p_id: id, p_pin: pin }),
+      eggHit: (device) => rpc('egg_hit', { p_device: device }),
+      eggCount: () => rpc('egg_count', {}),
     };
+  }
+
+  /* ---------- compteur de l'étoile : visible seulement sur l'appareil de l'organisateur ---------- */
+  // Ouvre une fois le site avec #moi à la fin de l'adresse : cet appareil devient « organisateur ».
+  let owner = false;
+  try {
+    if (location.hash === '#moi') localStorage.setItem('xmas-owner', '1');
+    if (location.hash === '#fin') localStorage.removeItem('xmas-owner');
+    owner = localStorage.getItem('xmas-owner') === '1';
+  } catch {}
+  function reportFound() {
+    if (owner || !store) return;   // tes propres essais ne comptent pas
+    let sent = false; try { sent = localStorage.getItem('xmas-egg-sent') === '1'; } catch {}
+    if (sent) return;
+    store.eggHit(S.uid).then(() => { try { localStorage.setItem('xmas-egg-sent', '1'); } catch {} }).catch(() => {});
+  }
+  function refreshFound() {
+    if (!owner || !store || document.hidden) return;
+    store.eggCount().then((n) => {
+      const el = $('#egg-stat'); if (!el || typeof n !== 'number') return;
+      el.textContent = n === 0 ? '★ Personne n’a trouvé l’étoile' : n === 1 ? '★ 1 personne a trouvé l’étoile' : `★ ${n} personnes ont trouvé l’étoile`;
+      el.hidden = false;
+    }).catch(() => {});
   }
 
   function boot() {
@@ -912,6 +940,7 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
         renderLists();
         if (S.tab === 'mine' && !S.dirty) openEditor(S.editId);
       }, () => { clearTimeout(slow); S.status = 'error'; renderLists(); });
+      if (owner) { refreshFound(); setInterval(refreshFound, 8000); document.addEventListener('visibilitychange', refreshFound); }
     } catch (e) { clearTimeout(slow); S.status = 'error'; renderLists(); }
   }
 
