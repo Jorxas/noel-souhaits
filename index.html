@@ -238,7 +238,27 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
 @keyframes callpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 .egg-counter { margin: 0 0 8px; font: 400 24px/1 var(--font-display); color: var(--gold); font-variant-numeric: tabular-nums; min-height: 1em; }
 
+.star-wrap { flex: none; position: relative; width: 76px; height: 76px; }
+.star-n {
+  position: absolute; inset: 0; display: grid; place-items: center; padding-top: 7%; pointer-events: none;
+  font: 400 19px/1 var(--font-display); color: var(--surface); font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.tap-hand { position: absolute; left: calc(72% - 18px); top: calc(68% - 2px); width: 38px; height: 46px; pointer-events: none; opacity: 0; z-index: 2; animation: handcycle 9s ease-in-out 2.5s infinite; }
+.tap-hand svg { display: block; width: 100%; height: 100%; transform: rotate(-40deg); transform-origin: 46% 6%; filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--ink) 35%, transparent)); }
+@keyframes handcycle {
+  0%   { opacity: 0; transform: translate(26px, 30px); }
+  7%   { opacity: 1; transform: translate(9px, 10px); }
+  13%  { transform: translate(1px, 2px) scale(.9); }
+  18%  { transform: translate(9px, 10px); }
+  24%  { transform: translate(1px, 2px) scale(.9); }
+  29%  { transform: translate(9px, 10px); opacity: 1; }
+  37%  { opacity: 0; transform: translate(26px, 30px); }
+  100% { opacity: 0; transform: translate(26px, 30px); }
+}
+
 @media (max-width: 520px) {
+  .star-wrap { width: 60px; height: 60px; }
+  .star-n { font-size: 15px; }
   .star { width: 60px; height: 60px; }
   .row { grid-template-columns: 26px minmax(0, 1fr); }
   .row .ctl { grid-column: 2; grid-template-columns: 36px 36px 1fr; }
@@ -257,9 +277,20 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
 
 <div class="app">
   <header class="head">
-    <button class="star" id="star" type="button" aria-label="Étoile du sapin">
-      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4l13.2 28.6 31.3 3.7-23.2 21.4 6.2 30.9L50 73.9 22.5 88.6l6.2-30.9L5.5 36.3l31.3-3.7z"/></svg>
-    </button>
+    <span class="star-wrap">
+  <button class="star" id="star" type="button" aria-label="Étoile du sapin">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4l13.2 28.6 31.3 3.7-23.2 21.4 6.2 30.9L50 73.9 22.5 88.6l6.2-30.9L5.5 36.3l31.3-3.7z"/></svg>
+  </button>
+      <span class="star-n" id="star-n" aria-hidden="true">0/5</span>
+      <span class="tap-hand" aria-hidden="true">
+        <svg viewBox="0 0 48 58">
+          <rect x="18" y="3" width="10" height="28" rx="5" fill="#fff" stroke="var(--ink)" stroke-width="2.4"/>
+          <rect x="10" y="26" width="30" height="22" rx="9" fill="#fff" stroke="var(--ink)" stroke-width="2.4"/>
+          <ellipse cx="9" cy="35" rx="5" ry="8" fill="#fff" stroke="var(--ink)" stroke-width="2.4" transform="rotate(14 9 35)"/>
+          <rect x="13" y="46" width="24" height="9" rx="3" fill="var(--accent)" stroke="var(--ink)" stroke-width="2.4"/>
+        </svg>
+      </span>
+    </span>
     <div class="head-text">
       <p class="eyebrow">Fête de Noël · Listes de cadeaux</p>
       <h1 id="title" aria-label="Les souhaits de Noël"></h1>
@@ -728,7 +759,10 @@ label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing:
   const star = $('#star'), egg = $('#egg'), eggClose = $('#egg-close'), eggActions = $('#egg-actions');
   const eggQ = $('#egg-q'), eggCounter = $('#egg-counter');
   let hits = 0, hitTimer;
-  const setStarCount = (n) => { const el = $('#star-count'); if (el) el.textContent = `(${n}/5)`; };
+  const setStarCount = (n) => {
+    const el = $('#star-count'); if (el) el.textContent = `(${n}/5)`;
+    const sn = $('#star-n'); if (sn) sn.textContent = `${n}/5`;
+  };
   star.addEventListener('click', () => {
     if (!egg.hidden) return;
     hits++; setStarCount(hits);
