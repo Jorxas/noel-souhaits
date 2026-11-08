@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Souhaits de Noël</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: une colonne centrée, titre à gauche avec l'étoile du sapin, onglets à pilule, cartes en grille fluide. */
+:root {
+  --bg: #eef3f2;
+  --surface: #ffffff;
+  --surface-2: #f4f8f7;
+  --ink: #15302a;
+  --muted: #566d67;
+  --line: #d3dfdc;
+  --accent: #c0283a;
+  --on-accent: #ffffff;
+  --gold: #b9811a;
+  --snow: #9bb7c2;
+  --c1: #c0283a; --c2: #1f6f5a; --c3: #a8710f; --c4: #35669f; --c5: #86459a;
+  --on-c: #ffffff;
+  --font-display: "Caprasimo", "Georgia", serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease: cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1f1b; --surface: #15302a; --surface-2: #1b3a33; --ink: #e9f3ef; --muted: #98b3ab; --line: #2a4a42;
+    --accent: #ff7684; --on-accent: #2b0910; --gold: #f2c86b; --snow: #ffffff;
+    --c1: #ff7684; --c2: #5cc7a6; --c3: #f2c86b; --c4: #7fb1ee; --c5: #c796db; --on-c: #10211d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1f1b; --surface: #15302a; --surface-2: #1b3a33; --ink: #e9f3ef; --muted: #98b3ab; --line: #2a4a42;
+  --accent: #ff7684; --on-accent: #2b0910; --gold: #f2c86b; --snow: #ffffff;
+  --c1: #ff7684; --c2: #5cc7a6; --c3: #f2c86b; --c4: #7fb1ee; --c5: #c796db; --on-c: #10211d;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.5 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 80px;
+  min-height: 100vh;
+  background-image: radial-gradient(60rem 28rem at 15% -8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%),
+                    radial-gradient(50rem 26rem at 100% 0%, color-mix(in srgb, var(--c2) 14%, transparent), transparent 70%);
+  background-repeat: no-repeat;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+#snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.app { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; }
+
+/* ---------- en-tête ---------- */
+.head { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.star {
+  --glow: 0;
+  flex: none; width: 76px; height: 76px; border: 0; background: none; padding: 0; border-radius: 50%;
+  color: var(--gold); position: relative;
+  filter: drop-shadow(0 0 calc(6px + var(--glow) * 16px) color-mix(in srgb, var(--gold) calc(40% + var(--glow) * 55%), transparent));
+  animation: twinkle 3.6s ease-in-out infinite;
+  transition: transform .45s var(--ease);
+}
+.star svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.star.hit { animation: none; transform: rotate(72deg) scale(1.18); }
+@keyframes twinkle { 0%,100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.06) rotate(4deg); } }
+.head-text { min-width: 0; flex: 1 1 320px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+h1 {
+  font: 400 clamp(34px, 7vw, 58px)/1.02 var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -.01em;
+}
+h1 .w { display: inline-block; opacity: 0; transform: translateY(.45em); animation: rise .8s var(--ease) forwards; animation-delay: calc(var(--i) * 90ms + 120ms); }
+@keyframes rise { to { opacity: 1; transform: none; } }
+.lede { max-width: 56ch; color: var(--muted); margin: 14px 0 0; animation: fade .9s .55s both; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+
+/* ---------- onglets ---------- */
+.tabs {
+  position: relative; display: inline-flex; gap: 2px; padding: 4px; margin: 30px 0 22px; max-width: 100%;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px; overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-pill { position: absolute; top: 4px; bottom: 4px; left: 0; border-radius: 999px; background: var(--ink); transition: transform .45s var(--ease), width .45s var(--ease); z-index: 0; }
+.tab {
+  position: relative; z-index: 1; border: 0; background: none; padding: 9px 18px; border-radius: 999px; white-space: nowrap;
+  font-weight: 600; color: var(--muted); transition: color .3s;
+}
+.tab[aria-selected="true"] { color: var(--bg); }
+.tab .count { margin-left: 6px; font-size: 12px; opacity: .75; font-variant-numeric: tabular-nums; }
+
+.panel { animation: panelIn .5s var(--ease) both; }
+@keyframes panelIn { from { opacity: 0; transform: translateY(14px); } }
+
+/* ---------- liste des listes ---------- */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.summary { margin: 0; color: var(--muted); font-weight: 500; }
+.summary b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: start; }
+
+.card {
+  min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 18px 16px;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 4%, transparent), 0 14px 30px -22px color-mix(in srgb, var(--ink) 55%, transparent);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s;
+}
+.card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: 0 22px 36px -22px color-mix(in srgb, var(--ink) 60%, transparent); }
+.card.enter { animation: cardIn .65s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(26px) scale(.97); } }
+.card-top { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--tone); color: var(--on-c); font: 400 20px/1 var(--font-display);
+}
+.who { min-width: 0; flex: 1; }
+.who h2 { margin: 0; font-size: 18px; line-height: 1.2; overflow-wrap: anywhere; }
+.who small { color: var(--muted); font-size: 13px; }
+.me-tag { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--on-accent); background: var(--accent); padding: 3px 8px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; }
+.gifts { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 4px; }
+.gift { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; padding: 8px 8px 8px 0; border-top: 1px dashed var(--line); }
+.gift:first-child { border-top: 0; }
+.gift .n { font: 400 22px/1.15 var(--font-display); color: var(--muted); font-variant-numeric: tabular-nums; }
+.gift:first-child .n { color: var(--accent); }
+.gift .t { font-weight: 600; overflow-wrap: anywhere; }
+.gift .note { display: block; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.gift .note a { color: var(--accent); text-underline-offset: 3px; }
+.top-chip { display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); vertical-align: 2px; }
+.card-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+/* ---------- boutons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); background: var(--surface);
+  padding: 9px 16px; border-radius: 999px; font-weight: 600; transition: transform .25s var(--ease), background .25s, border-color .25s, box-shadow .25s;
+}
+.btn:hover { transform: translateY(-2px); border-color: var(--ink); }
+.btn:active { transform: translateY(0) scale(.97); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; box-shadow: 0 10px 22px -12px var(--accent); }
+.btn.primary:hover { border-color: transparent; box-shadow: 0 16px 26px -12px var(--accent); }
+.btn.small { padding: 6px 12px; font-size: 14px; }
+.btn.danger.armed { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.btn[disabled] { opacity: .45; pointer-events: none; }
+.icon-btn { width: 36px; height: 36px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; transition: transform .25s var(--ease), border-color .25s, opacity .25s; }
+.icon-btn:hover { transform: scale(1.1); border-color: var(--ink); }
+.icon-btn[disabled] { opacity: .3; pointer-events: none; }
+.icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- états vides ---------- */
+.state { text-align: center; padding: 48px 20px; background: var(--surface); border: 1px dashed var(--line); border-radius: 20px; }
+.state h2 { font: 400 26px/1.15 var(--font-display); margin: 0 0 8px; text-wrap: balance; }
+.state p { margin: 0 auto 18px; max-width: 46ch; color: var(--muted); }
+.skeleton { height: 220px; border-radius: 20px; background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%) 0 0 / 250% 100%; border: 1px solid var(--line); animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { background-position: -150% 0; } }
+
+/* ---------- éditeur ---------- */
+.editor { max-width: 680px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: clamp(18px, 4vw, 30px); box-shadow: 0 24px 40px -30px color-mix(in srgb, var(--ink) 60%, transparent); }
+.editor h2 { font: 400 28px/1.1 var(--font-display); margin: 0 0 6px; }
+.editor .hint { margin: 0 0 22px; color: var(--muted); }
+.banner { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin-bottom: 18px; font-size: 14px; }
+label.field { display: block; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.input {
+  width: 100%; min-width: 0; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg);
+  transition: border-color .25s, box-shadow .25s, background .25s;
+}
+.input::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); background: var(--surface); }
+.rows { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px; }
+.row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 12px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line); will-change: transform; }
+.row.in { animation: rowIn .45s var(--ease) both; }
+.row.out { animation: rowOut .3s var(--ease) both; }
+@keyframes rowIn { from { opacity: 0; transform: translateY(-12px) scale(.97); } }
+@keyframes rowOut { to { opacity: 0; transform: translateX(30px) scale(.96); } }
+.row .num { font: 400 26px/1.4 var(--font-display); color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+.row:first-child .num { color: var(--accent); }
+.row .fields { display: grid; gap: 8px; min-width: 0; }
+.row .ctl { display: grid; grid-template-columns: repeat(2, 36px); gap: 6px; }
+.row .ctl .del { grid-column: span 2; justify-self: end; }
+.editor-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.editor-foot .spacer { flex: 1; }
+.dirty { font-size: 13px; color: var(--gold); font-weight: 600; opacity: 0; transition: opacity .3s; }
+.dirty.on { opacity: 1; }
+.add { margin-top: 12px; }
+
+/* ---------- règles ---------- */
+.rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; max-width: 720px; counter-reset: r; }
+.rule { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; animation: cardIn .6s var(--ease) both; animation-delay: calc(var(--i) * 70ms); transition: transform .3s var(--ease); }
+.rule:hover { transform: translateX(6px); }
+.rule .rn { font: 400 34px/1 var(--font-display); color: var(--accent); font-variant-numeric: tabular-nums; }
+.rule h3 { margin: 0 0 2px; font-size: 17px; }
+.rule p { margin: 0; color: var(--muted); }
+.rule.last { border-style: dashed; }
+
+/* ---------- toast ---------- */
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 30px); opacity: 0; pointer-events: none; z-index: 30; background: var(--ink); color: var(--bg); padding: 11px 20px; border-radius: 999px; font-weight: 600; max-width: calc(100vw - 32px); text-align: center; transition: transform .45s var(--ease), opacity .3s; }
+.toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+/* ---------- surprise ---------- */
+.egg { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: color-mix(in srgb, var(--bg) 78%, #07140f); backdrop-filter: blur(4px); opacity: 0; transition: opacity .5s; overflow: hidden; }
+.egg.on { opacity: 1; }
+.sleigh { position: absolute; top: 14%; left: 0; width: min(260px, 60vw); color: var(--gold); transform: translateX(-120%); }
+.egg.on .sleigh { animation: fly 5.5s cubic-bezier(.4,.1,.5,1) .2s forwards; }
+@keyframes fly { 0% { transform: translate(-120%, 30px) rotate(-6deg); } 50% { transform: translate(40vw, -20px) rotate(2deg); } 100% { transform: translate(115vw, 40px) rotate(-5deg); } }
+.egg-card { position: relative; width: min(100%, 440px); max-height: calc(100vh - 40px); overflow-y: auto; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 32px 26px; transform: scale(.85) translateY(20px); opacity: 0; transition: transform .7s .35s var(--ease), opacity .5s .35s; }
+.egg.on .egg-card { transform: none; opacity: 1; }
+.egg-card h2 { font: 400 44px/1 var(--font-display); margin: 0 0 12px; color: var(--accent); }
+.egg-card p { margin: 0 0 20px; color: var(--muted); }
+.egg-card p b { color: var(--ink); }
+.mail { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 0 0 18px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); border: 1px dashed var(--line); }
+.mail span { font-weight: 700; user-select: all; overflow-wrap: anywhere; }
+.egg-card p.egg-q { color: var(--ink); font-weight: 700; margin: 0 0 6px; }
+.egg-card p.egg-count { color: var(--gold); font-weight: 600; margin: 0 0 16px; min-height: 1.5em; }
+.egg-actions { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; min-height: 48px; }
+.egg-actions .btn { max-width: 100%; white-space: normal; }
+.btn.run { position: fixed; z-index: 50; transition: left .35s var(--ease), top .35s var(--ease), transform .25s var(--ease); }
+.btn.stay { transition: font-size .35s var(--ease), padding .35s var(--ease), transform .25s var(--ease); }
+
+.pin-gate { margin-top: 12px; display: grid; gap: 6px; animation: cardIn .4s var(--ease) both; }
+.pin-label { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pin-row { display: flex; gap: 8px; align-items: center; }
+.input.pin { width: 9ch; min-width: 0; flex: 0 0 auto; text-align: center; letter-spacing: .4em; font-size: 18px; font-variant-numeric: tabular-nums; }
+.pin-msg { margin: 0; min-height: 1.3em; font-size: 14px; font-weight: 600; color: var(--accent); }
+.pin-block { margin-top: 16px; }
+.pin-block .hint-s { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+.rule-count { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rule .arrow { display: inline-block; vertical-align: -7px; margin-left: 4px; color: var(--accent); animation: bob 1s ease-in-out infinite; }
+.rule .arrow svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; display: block; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.star.call { animation: callpulse 1.1s ease-in-out infinite; }
+.star.call.hit { animation: none; }
+@keyframes callpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+.egg-counter { margin: 0 0 8px; font: 400 24px/1 var(--font-display); color: var(--gold); font-variant-numeric: tabular-nums; min-height: 1em; }
+
+@media (max-width: 520px) {
+  .star { width: 60px; height: 60px; }
+  .row { grid-template-columns: 26px minmax(0, 1fr); }
+  .row .ctl { grid-column: 2; grid-template-columns: 36px 36px 1fr; }
+  .row .ctl .del { grid-column: auto; }
+  .row .num { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .sleigh { display: none; }
+}
+</style>
+
+</head>
+<body>
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<div class="app">
+  <header class="head">
+    <button class="star" id="star" type="button" aria-label="Étoile du sapin">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4l13.2 28.6 31.3 3.7-23.2 21.4 6.2 30.9L50 73.9 22.5 88.6l6.2-30.9L5.5 36.3l31.3-3.7z"/></svg>
+    </button>
+    <div class="head-text">
+      <p class="eyebrow">Fête de Noël · Listes de cadeaux</p>
+      <h1 id="title" aria-label="Les souhaits de Noël"></h1>
+    </div>
+  </header>
+  <p class="lede">Le tirage est fait. Écris ici les cadeaux qui te feraient plaisir, du plus désiré au moins désiré. Tout le monde peut lire toutes les listes.</p>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <span class="tab-pill" id="pill" aria-hidden="true"></span>
+    <button class="tab" role="tab" id="tab-lists" data-tab="lists" aria-selected="true" aria-controls="panel-lists" type="button">Les listes<span class="count" id="count"></span></button>
+    <button class="tab" role="tab" id="tab-mine" data-tab="mine" aria-selected="false" aria-controls="panel-mine" type="button">Ma liste</button>
+    <button class="tab" role="tab" id="tab-rules" data-tab="rules" aria-selected="false" aria-controls="panel-rules" type="button">Règles</button>
+  </nav>
+
+  <section class="panel" id="panel-lists" role="tabpanel" aria-labelledby="tab-lists">
+    <div class="bar"><p class="summary" id="summary" aria-live="polite"></p></div>
+    <div id="lists"></div>
+  </section>
+  <section class="panel" id="panel-mine" role="tabpanel" aria-labelledby="tab-mine" hidden>
+    <div id="editor"></div>
+  </section>
+  <section class="panel" id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" hidden>
+    <ol class="rules" id="rules"></ol>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="egg" id="egg" hidden role="dialog" aria-modal="true" aria-labelledby="egg-title">
+  <svg class="sleigh" viewBox="0 0 170 100" aria-hidden="true">
+    <g fill="currentColor">
+      <circle cx="152" cy="30" r="4"/><circle cx="162" cy="46" r="2.5"/><circle cx="144" cy="50" r="2"/>
+    </g>
+    <path d="M12 76 Q40 92 112 84 Q134 82 132 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+    <path d="M26 66 L112 66 Q118 44 100 38 L42 38 Q28 44 26 66Z" fill="var(--accent)"/>
+    <path d="M38 72 L40 82 M70 72 L72 84 M100 72 L100 83" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="46" cy="32" r="16" fill="currentColor" opacity=".9"/>
+    <circle cx="74" cy="34" r="9" fill="var(--surface)"/>
+    <path d="M65 30 Q74 12 86 28Z" fill="var(--accent)"/><circle cx="87" cy="27" r="3" fill="var(--surface)"/>
+  </svg>
+  <div class="egg-card">
+    <p class="egg-counter" id="egg-counter" aria-live="polite"></p>
+    <h2 id="egg-title">Ho ho ho !</h2>
+    <p>Tu as trouvé le secret. Voici mon PayPal, si le cœur t’en dit :</p>
+    <div class="mail"><span id="egg-mail">pokemtezo5@gmail.com</span><button class="btn small" id="egg-copy" type="button">Copier</button></div>
+    <p class="egg-q" id="egg-q"></p>
+    <div class="egg-actions" id="egg-actions">
+      <button class="btn primary" id="egg-close" type="button">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const MAX_GIFTS = 10;
+
+  /* Modifie ces règles à ta guise. */
+  const RULES = [
+    ['Le tirage est un secret', 'Garde pour toi le nom que tu as tiré jusqu’au jour de la fête.'],
+    ['Classe tes idées', 'Mets en premier le cadeau que tu veux le plus, puis les autres par ordre de préférence.'],
+    ['Pense à plusieurs choix', 'Donne au moins trois idées, pour que la personne qui t’offre un cadeau ait de la marge.'],
+    ['Respecte le budget', 'Reste dans le budget convenu pour le groupe. Un petit cadeau bien choisi vaut mieux qu’un gros cadeau au hasard.'],
+    ['Précise si besoin', 'Taille, couleur, modèle ou lien : écris-le dans la ligne « précision ». Un lien web devient cliquable.'],
+    ['Une liste par personne', 'Tu peux modifier ta liste quand tu veux, jusqu’à la veille de la fête.'],
+    ['Pas de spoil', 'Si tu sais déjà ce que tu offres, personne n’a besoin de l’apprendre avant l’ouverture des paquets.'],
+    ['Choisis un code', 'Choisis un code à 4 chiffres en créant ta liste et retiens-le. Sans lui, personne ne peut la modifier.'],
+    ['Dernière règle', 'Clique sur l’étoile'],
+  ];
+
+  const S = { db: null, uid: null, isOwner: false, canWrite: null, status: 'loading', lists: null, tab: 'lists',
+              editId: null, draft: null, dirty: false, base: null, saving: false, seen: new Set() };
+
+  const h = (tag, props = {}, ...kids) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat()) if (kid != null) e.append(kid);
+    return e;
+  };
+  const icon = (d) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true'); const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); s.append(p); return s; };
+  const ICON = { up: 'M6 15l6-6 6 6', down: 'M6 9l6 6 6-6', x: 'M6 6l12 12M18 6L6 18' };
+
+  /* ---------- titre animé ---------- */
+  const title = $('#title');
+  'Les souhaits de Noël'.split(' ').forEach((w, i) => { title.append(h('span', { class: 'w', 'aria-hidden': 'true', style: `--i:${i}`, text: w }), ' '); });
+
+  /* ---------- toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 3200);
+  }
+
+  /* ---------- utilitaires ---------- */
+  const tone = (name) => { let n = 0; for (const c of name) n = (n * 31 + c.charCodeAt(0)) >>> 0; return `var(--c${(n % 5) + 1})`; };
+  const canEditOwn = () => !!(S.db && (S.isOwner || (S.canWrite !== false && S.uid)));
+  const ago = (ts) => {
+    if (!ts) return '';
+    const s = Math.round((Date.now() - ts) / 1000);
+    const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
+    if (s < 60) return 'à l’instant';
+    if (s < 3600) return rtf.format(-Math.round(s / 60), 'minute');
+    if (s < 86400) return rtf.format(-Math.round(s / 3600), 'hour');
+    return rtf.format(-Math.round(s / 86400), 'day');
+  };
+  function linkify(text) {
+    const out = [];
+    text.split(/(https?:\/\/[^\s]+)/g).forEach((part, i) => {
+      if (i % 2 === 0) { if (part) out.push(part); return; }
+      try { const u = new URL(part); out.push(h('a', { href: u.href, target: '_blank', rel: 'noopener noreferrer', text: u.hostname.replace(/^www\./, '') })); }
+      catch { out.push(part); }
+    });
+    return out;
+  }
+  const uid8 = () => Math.random().toString(36).slice(2, 10);
+
+  /* ---------- codes à 4 chiffres : mémorisés sur l'appareil qui les a saisis ---------- */
+  const pins = (() => { try { return JSON.parse(localStorage.getItem('xmas-pins') || '{}'); } catch { return {}; } })();
+  const savePins = () => { try { localStorage.setItem('xmas-pins', JSON.stringify(pins)); } catch {} };
+  const getPin = (id) => pins[id] || null;
+  const setPin = (id, pin) => { pins[id] = pin; savePins(); };
+  const dropPin = (id) => { delete pins[id]; savePins(); };
+  function explain(res) {
+    if (res === 'bad_pin') return 'Mauvais code.';
+    if (typeof res === 'string' && res.startsWith('locked:')) return `Trop d’essais. Réessaie dans ${res.slice(7)} min.`;
+    if (res === 'invalid') return 'Certaines informations sont incorrectes.';
+    if (res === 'missing') return 'Cette liste n’existe plus.';
+    return null;
+  }
+
+  /* ---------- onglets ---------- */
+  const tabs = [...document.querySelectorAll('.tab')];
+  function movePill() {
+    const t = tabs.find(b => b.dataset.tab === S.tab), p = $('#pill');
+    p.style.width = t.offsetWidth + 'px'; p.style.transform = `translateX(${t.offsetLeft}px)`;
+  }
+  function setTab(name) {
+    S.tab = name;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+    for (const k of ['lists', 'mine', 'rules']) {
+      const p = $('#panel-' + k); const show = k === name;
+      if (show && p.hidden) { p.hidden = false; p.style.animation = 'none'; void p.offsetWidth; p.style.animation = ''; }
+      else if (!show) p.hidden = true;
+    }
+    if (name === 'mine') openEditor(S.editId || S.uid);
+    star.classList.toggle('call', name === 'rules');
+    movePill();
+    const tb = tabs.find(b => b.dataset.tab === name); tb && tb.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }
+  tabs.forEach(b => b.addEventListener('click', () => { if (b.dataset.tab === 'mine') S.editId = S.uid; setTab(b.dataset.tab); }));
+  addEventListener('resize', movePill);
+  document.fonts?.ready.then(movePill);
+
+  /* ---------- liste de tout le monde ---------- */
+  function renderLists() {
+    const root = $('#lists'); root.replaceChildren();
+    const sum = $('#summary'); const cnt = $('#count');
+    cnt.textContent = S.lists ? S.lists.length : '';
+    if (S.status === 'nodb') {
+      sum.textContent = '';
+      root.append(h('div', { class: 'state' }, h('h2', { text: 'Impossible de charger les listes' }), h('p', { text: 'Recharge la page. Si le problème reste, préviens l’organisateur.' })));
+      return;
+    }
+    if (S.status === 'error') {
+      sum.textContent = '';
+      root.append(h('div', { class: 'state' }, h('h2', { text: 'Les listes ne se chargent pas' }), h('p', { text: 'Recharge la page dans un instant. Si le problème reste, préviens l’organisateur.' })));
+      return;
+    }
+    if (!S.lists) {
+      sum.textContent = S.status === 'slow' ? 'La connexion est lente. Les listes arrivent dès que possible.' : 'Chargement des listes…';
+      root.append(h('div', { class: 'grid' }, h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' })));
+      return;
+    }
+    const total = S.lists.reduce((n, l) => n + (l.items?.length || 0), 0);
+    sum.replaceChildren(h('b', { text: String(S.lists.length) }), S.lists.length > 1 ? ' personnes ont écrit leur liste · ' : ' personne a écrit sa liste · ', h('b', { text: String(total) }), total > 1 ? ' idées de cadeaux' : ' idée de cadeau');
+    if (!S.lists.length) {
+      const st = h('div', { class: 'state' }, h('h2', { text: 'Personne n’a encore écrit sa liste' }), h('p', { text: 'Sois la première personne à te lancer. Ça prend deux minutes.' }));
+      if (canEditOwn()) st.append(h('button', { class: 'btn primary', type: 'button', onclick: () => { S.editId = S.uid; setTab('mine'); }, text: 'Écrire ma liste' }));
+      root.append(st); return;
+    }
+    const sorted = [...S.lists].sort((a, b) => (a.id === S.uid ? -1 : b.id === S.uid ? 1 : (a.name || '').localeCompare(b.name || '', 'fr')));
+    const grid = h('div', { class: 'grid' });
+    let fresh = 0;
+    sorted.forEach(l => {
+      const isNew = !S.seen.has(l.id); S.seen.add(l.id);
+      grid.append(card(l, isNew ? fresh++ : null));
+    });
+    root.append(grid);
+  }
+
+  function card(l, enterIndex) {
+    const mine = l.id === S.uid;
+    const name = l.name || 'Sans nom';
+    const items = Array.isArray(l.items) ? l.items : [];
+    const c = h('article', { class: 'card' + (enterIndex != null ? ' enter' : ''), style: enterIndex != null ? `--i:${enterIndex}` : null },
+      h('div', { class: 'card-top' },
+        h('div', { class: 'avatar', 'aria-hidden': 'true', style: `--tone:${tone(name)}`, text: name.trim().charAt(0).toUpperCase() || '?' }),
+        h('div', { class: 'who' },
+          h('h2', {}, name, mine ? h('span', { class: 'me-tag', text: 'Toi' }) : null),
+          h('small', { text: `${items.length} idée${items.length > 1 ? 's' : ''}${l.updatedAt ? ' · ' + ago(l.updatedAt) : ''}` }))));
+    const ol = h('ol', { class: 'gifts' });
+    items.forEach((it, i) => {
+      ol.append(h('li', { class: 'gift' },
+        h('span', { class: 'n', 'aria-hidden': 'true', text: String(i + 1) }),
+        h('div', {}, h('span', { class: 't', text: it.text || '' }), i === 0 && items.length > 1 ? h('span', { class: 'top-chip', text: 'Coup de cœur' }) : null,
+          it.note ? h('span', { class: 'note' }, linkify(it.note)) : null)));
+    });
+    c.append(ol);
+    const actions = h('div', { class: 'card-actions' });
+    const btn = h('button', { class: 'btn small', type: 'button', text: mine ? 'Modifier ma liste' : 'Modifier' });
+    const msg = h('p', { class: 'pin-msg', role: 'alert' });
+    const input = h('input', { class: 'input pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', maxlength: '4', autocomplete: 'off', placeholder: '••••', 'aria-label': 'Code à 4 chiffres de la liste' });
+    const gate = h('form', { class: 'pin-gate', hidden: true },
+      h('span', { class: 'pin-label', text: 'Code de cette liste' }),
+      h('div', { class: 'pin-row' }, input, h('button', { class: 'btn small primary', type: 'submit', text: 'Valider' })),
+      msg);
+    input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 4); msg.textContent = ''; });
+    btn.addEventListener('click', () => {
+      if (getPin(l.id)) { S.editId = l.id; setTab('mine'); return; }
+      gate.hidden = !gate.hidden; if (!gate.hidden) input.focus();
+    });
+    gate.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pin = input.value;
+      if (!/^\d{4}$/.test(pin)) { msg.textContent = 'Le code a 4 chiffres.'; return; }
+      msg.textContent = 'Vérification…';
+      try {
+        const res = await store.check(l.id, pin);
+        if (res === 'ok') { setPin(l.id, pin); S.editId = l.id; setTab('mine'); return; }
+        msg.textContent = explain(res) || 'Code refusé.';
+      } catch { msg.textContent = 'Impossible de vérifier le code.'; }
+    });
+    actions.append(btn); c.append(actions, gate);
+    return c;
+  }
+
+  /* ---------- éditeur ---------- */
+  function currentDoc(id) { return (S.lists || []).find(l => l.id === id) || null; }
+
+  function openEditor(id) {
+    const box = $('#editor');
+    if (!canEditOwn()) { renderReadOnly(box); return; }
+    S.editId = id || S.uid;
+    const doc = currentDoc(S.editId);
+    // Ne reconstruit pas si l'éditeur est déjà ouvert sur ce document et qu'il y a des changements.
+    if (S.draft && S.draft.id === S.editId && (S.dirty || (doc && doc.updatedAt === S.base))) return;
+    let name = doc?.name || '';
+    if (!doc && S.editId === S.uid) { try { name = localStorage.getItem('xmas-name') || ''; } catch {} }
+    S.draft = { id: S.editId, name, pin: getPin(S.editId) || '', items: (doc?.items || []).map(i => ({ k: uid8(), text: i.text || '', note: i.note || '' })) };
+    if (!S.draft.items.length) S.draft.items.push({ k: uid8(), text: '', note: '' });
+    S.base = doc?.updatedAt ?? null; S.dirty = false;
+    buildEditor();
+  }
+
+  function renderReadOnly(box) {
+    box.replaceChildren(h('div', { class: 'state' }, h('h2', { text: 'Ton accès est en lecture seule' }), h('p', { text: 'Tu peux lire toutes les listes, mais pas écrire la tienne. Demande à l’organisateur.' })));
+  }
+
+  function buildEditor() {
+    const d = S.draft, box = $('#editor');
+    const own = d.id === S.uid, existing = !!currentDoc(d.id);
+    const needPin = !getPin(d.id);
+    const rows = h('ol', { class: 'rows', id: 'rows' });
+    d.items.forEach(it => rows.append(makeRow(it)));
+    const addBtn = h('button', { class: 'btn add', type: 'button', id: 'add', onclick: addRow, text: '+ Ajouter un cadeau' });
+    const dirtyNote = h('span', { class: 'dirty', id: 'dirty', text: 'Modifications non enregistrées' });
+    const foot = h('div', { class: 'editor-foot' }, h('button', { class: 'btn primary', id: 'save', type: 'button', onclick: save, text: 'Enregistrer ma liste' }), dirtyNote, h('span', { class: 'spacer' }));
+    if (existing) {
+      const del = h('button', { class: 'btn small danger', type: 'button', text: 'Supprimer la liste' });
+      let armed = null;
+      const disarm = () => { armed = null; del.classList.remove('armed'); del.textContent = 'Supprimer la liste'; };
+      del.addEventListener('click', async () => {
+        if (!armed) { del.classList.add('armed'); del.textContent = 'Confirmer la suppression'; armed = setTimeout(disarm, 3500); return; }
+        clearTimeout(armed); disarm();
+        const pin = getPin(d.id) || d.pin;
+        if (!/^\d{4}$/.test(pin || '')) { toast('Entre d’abord le code de la liste.'); $('#f-pin')?.focus(); return; }
+        try {
+          const res = await store.remove(d.id, pin);
+          if (res === 'ok') { dropPin(d.id); toast('Liste supprimée'); S.draft = null; S.dirty = false; S.editId = S.uid; setTab('lists'); return; }
+          toast(explain(res) || 'Impossible de supprimer la liste.');
+          if (res === 'bad_pin') { dropPin(d.id); S.draft.pin = ''; buildEditor(); }
+        } catch { toast('Impossible de supprimer la liste.'); }
+      });
+      foot.append(del);
+    }
+    const pinBlock = needPin ? h('div', { class: 'pin-block' },
+      h('label', { class: 'field', for: 'f-pin', text: existing ? 'Code de la liste' : 'Code à 4 chiffres' }),
+      h('input', { class: 'input pin', id: 'f-pin', type: existing ? 'password' : 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: '4', autocomplete: 'off', placeholder: '••••', value: d.pin || '',
+        oninput: (e) => { d.pin = e.target.value.replace(/\D/g, '').slice(0, 4); e.target.value = d.pin; } }),
+      h('p', { class: 'hint-s', text: existing ? 'Le code choisi quand la liste a été créée.' : 'Retiens-le : il sert à modifier ta liste plus tard.' })) : null;
+    box.replaceChildren(h('div', { class: 'editor' },
+      h('h2', { text: own ? 'Ma liste de Noël' : 'Liste de ' + (d.name || 'quelqu’un') }),
+      h('p', { class: 'hint', text: 'Le premier cadeau est celui que tu veux le plus. Utilise les flèches pour changer l’ordre.' }),
+      !own ? h('div', { class: 'banner', text: 'Tu modifies la liste de quelqu’un d’autre.' }) : null,
+      h('label', { class: 'field', for: 'f-name', text: own ? 'Ton prénom' : 'Prénom' }),
+      h('input', { class: 'input', id: 'f-name', type: 'text', maxlength: '40', autocomplete: 'given-name', placeholder: 'Ex : Léa', value: d.name,
+        oninput: (e) => { d.name = e.target.value; markDirty(); } }),
+      pinBlock,
+      rows, addBtn, foot));
+    refreshRows();
+  }
+
+  function makeRow(it) {
+    const row = h('li', { class: 'row', 'data-k': it.k },
+      h('span', { class: 'num', 'aria-hidden': 'true' }),
+      h('div', { class: 'fields' },
+        h('input', { class: 'input', type: 'text', maxlength: '80', placeholder: 'Le cadeau (ex : casque audio)', 'aria-label': 'Cadeau', value: it.text, oninput: (e) => { it.text = e.target.value; markDirty(); } }),
+        h('input', { class: 'input', type: 'text', maxlength: '200', placeholder: 'Précision ou lien (facultatif)', 'aria-label': 'Précision ou lien', value: it.note, oninput: (e) => { it.note = e.target.value; markDirty(); } })),
+      h('div', { class: 'ctl' },
+        h('button', { class: 'icon-btn up', type: 'button', 'aria-label': 'Monter', onclick: () => move(it.k, -1) }, icon(ICON.up)),
+        h('button', { class: 'icon-btn down', type: 'button', 'aria-label': 'Descendre', onclick: () => move(it.k, 1) }, icon(ICON.down)),
+        h('button', { class: 'icon-btn del', type: 'button', 'aria-label': 'Retirer ce cadeau', onclick: () => removeRow(it.k) }, icon(ICON.x))));
+    return row;
+  }
+
+  function refreshRows() {
+    const rows = [...$('#rows').children].filter(r => !r.classList.contains('out'));
+    rows.forEach((r, i) => {
+      $('.num', r).textContent = String(i + 1);
+      $('.up', r).disabled = i === 0;
+      $('.down', r).disabled = i === rows.length - 1;
+    });
+    const add = $('#add'); if (add) add.disabled = S.draft.items.length >= MAX_GIFTS;
+  }
+
+  function markDirty() { S.dirty = true; $('#dirty')?.classList.add('on'); }
+
+  function flip(container, mutate) {
+    const before = new Map([...container.children].map(r => [r, r.getBoundingClientRect().top]));
+    mutate();
+    if (reduced) return;
+    for (const r of container.children) {
+      const dy = before.get(r) - r.getBoundingClientRect().top;
+      if (dy) r.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 380, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    }
+  }
+
+  function move(k, dir) {
+    const items = S.draft.items, i = items.findIndex(x => x.k === k), j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const rows = $('#rows');
+    flip(rows, () => {
+      [items[i], items[j]] = [items[j], items[i]];
+      const a = rows.querySelector(`[data-k="${k}"]`);
+      const b = rows.querySelector(`[data-k="${items[i].k}"]`);
+      dir < 0 ? rows.insertBefore(a, b) : rows.insertBefore(a, b.nextSibling);
+      refreshRows();
+    });
+    markDirty();
+  }
+
+  function addRow() {
+    if (S.draft.items.length >= MAX_GIFTS) return;
+    const it = { k: uid8(), text: '', note: '' };
+    S.draft.items.push(it);
+    const row = makeRow(it); row.classList.add('in');
+    $('#rows').append(row); refreshRows();
+    $('input', row).focus({ preventScroll: false });
+    markDirty();
+  }
+
+  function removeRow(k) {
+    const items = S.draft.items;
+    const rows = $('#rows'), row = rows.querySelector(`[data-k="${k}"]`);
+    if (items.length === 1) { items[0].text = ''; items[0].note = ''; row.querySelectorAll('input').forEach(x => { x.value = ''; }); markDirty(); return; }
+    const i = items.findIndex(x => x.k === k); if (i < 0) return;
+    items.splice(i, 1);
+    row.classList.add('out');
+    const done = () => flip(rows, () => { row.remove(); refreshRows(); });
+    reduced ? done() : setTimeout(done, 260);
+    refreshRows(); markDirty();
+  }
+
+  let writing = Promise.resolve();
+  async function save() {
+    const d = S.draft; if (!d || S.saving) return;
+    const name = d.name.trim();
+    const items = d.items.map(i => ({ text: i.text.trim(), note: i.note.trim() })).filter(i => i.text);
+    const pin = getPin(d.id) || d.pin || '';
+    if (!name) { toast('Écris d’abord ton prénom.'); $('#f-name').focus(); return; }
+    if (!items.length) { toast('Ajoute au moins un cadeau.'); return; }
+    if (!/^\d{4}$/.test(pin)) { toast('Le code doit avoir exactement 4 chiffres.'); $('#f-pin')?.focus(); return; }
+    S.saving = true; const btn = $('#save'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+    const updatedAt = Date.now();
+    writing = writing.then(() => store.save(d.id, { name, items, updatedAt }, pin));
+    try {
+      const res = await writing;
+      if (res !== 'ok') {
+        writing = Promise.resolve();
+        toast(explain(res) || 'Impossible d’enregistrer. Réessaie dans un instant.');
+        if (res === 'bad_pin') { dropPin(d.id); d.pin = ''; buildEditor(); }
+        else if ($('#save')) { $('#save').disabled = false; $('#save').textContent = 'Enregistrer ma liste'; }
+        return;
+      }
+      setPin(d.id, pin);
+      if (d.id === S.uid) { try { localStorage.setItem('xmas-name', name); } catch {} }
+      S.dirty = false; S.base = updatedAt; S.draft = null;
+      toast('Liste enregistrée. Merci !');
+      confetti();
+      S.editId = S.uid; setTab('lists');
+    } catch (e) {
+      writing = Promise.resolve();
+      toast('Impossible d’enregistrer. Réessaie dans un instant.');
+      if ($('#save')) { $('#save').disabled = false; $('#save').textContent = 'Enregistrer ma liste'; }
+    } finally { S.saving = false; }
+  }
+
+  /* ---------- règles ---------- */
+  function renderRules() {
+    const ol = $('#rules');
+    RULES.forEach(([t, p], i) => {
+      const last = i === RULES.length - 1;
+      const text = h('p', {}, p);
+      if (last) {
+        text.append(' ', h('span', { class: 'rule-count', id: 'star-count', text: '(0/5)' }), ' ',
+          h('span', { class: 'arrow', 'aria-hidden': 'true' }, icon('M12 19V5M5 12l7-7 7 7')));
+      }
+      ol.append(h('li', { class: 'rule' + (last ? ' last' : ''), style: `--i:${i}` },
+        h('span', { class: 'rn', 'aria-hidden': 'true', text: String(i + 1) }),
+        h('div', {}, h('h3', { text: t }), text)));
+    });
+  }
+
+  /* ---------- neige ---------- */
+  const cv = $('#snow'), ctx = cv.getContext('2d');
+  let W = 0, H = 0, flakes = [], boost = 0, snowColor = '#fff', frame = 0;
+  const flake = (y, extra) => ({ x: Math.random() * W, y: y ?? Math.random() * H, r: 1 + Math.random() * 2.6, v: .25 + Math.random() * .8, p: Math.random() * 6.28, a: .35 + Math.random() * .5, extra });
+  function resize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.max(28, Math.min(90, Math.round(W / 16)));
+    flakes = flakes.filter(f => f.extra); while (flakes.filter(f => !f.extra).length < n) flakes.push(flake());
+    draw(0);
+  }
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H); ctx.fillStyle = snowColor;
+    for (let i = flakes.length - 1; i >= 0; i--) {
+      const f = flakes[i];
+      if (!reduced) { f.y += f.v * (1 + boost * 3); f.x += Math.sin(t / 1300 + f.p) * .35; }
+      if (f.y > H + 6) { if (f.extra) { flakes.splice(i, 1); continue; } f.y = -6; f.x = Math.random() * W; }
+      ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function loop(t) {
+    if (!document.hidden) {
+      if ((frame++ & 63) === 0) snowColor = getComputedStyle(document.documentElement).getPropertyValue('--snow').trim() || '#fff';
+      boost = Math.max(0, boost - .004); draw(t);
+    }
+    requestAnimationFrame(loop);
+  }
+  function burst(n) { for (let i = 0; i < n; i++) flakes.push(flake(-Math.random() * H * .6, true)); boost = 1; }
+  function confetti() { if (!reduced) burst(50); }
+  addEventListener('resize', resize);
+  snowColor = getComputedStyle(document.documentElement).getPropertyValue('--snow').trim() || '#fff';
+  resize(); if (!reduced) requestAnimationFrame(loop);
+
+  /* ---------- surprise ---------- */
+  const star = $('#star'), egg = $('#egg'), eggClose = $('#egg-close'), eggActions = $('#egg-actions');
+  const eggQ = $('#egg-q'), eggCounter = $('#egg-counter');
+  let hits = 0, hitTimer;
+  const setStarCount = (n) => { const el = $('#star-count'); if (el) el.textContent = `(${n}/5)`; };
+  star.addEventListener('click', () => {
+    if (!egg.hidden) return;
+    hits++; setStarCount(hits);
+    star.style.setProperty('--glow', String(Math.min(1, hits / 5)));
+    star.classList.remove('hit'); void star.offsetWidth; star.classList.add('hit');
+    if (!reduced) burst(8);
+    clearTimeout(hitTimer);
+    hitTimer = setTimeout(() => { hits = 0; setStarCount(0); star.style.setProperty('--glow', '0'); star.classList.remove('hit'); }, 2200);
+    if (hits >= 5) { hits = 0; clearTimeout(hitTimer); star.classList.remove('hit'); star.style.setProperty('--glow', '0'); setTimeout(() => setStarCount(0), 900); showEgg(); }
+  });
+  const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']; let kpos = 0;
+  addEventListener('keydown', (e) => {
+    if (!egg.hidden) return;
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    kpos = k === KONAMI[kpos] ? kpos + 1 : (k === KONAMI[0] ? 1 : 0);
+    if (kpos === KONAMI.length) { kpos = 0; showEgg(); }
+  });
+
+  // Fermer la surprise : le bouton s'enfuit 3 fois, puis il faut cliquer 5 fois sur « Oui ».
+  // Seuls des compteurs s'affichent : aucune phrase n'explique le mécanisme.
+  const FLEES = 3, YESES = 5;
+  let phase = 'closed', flees = FLEES, yeses = YESES, lastFlee = 0;
+
+  function showEgg() {
+    phase = 'flee'; flees = FLEES; yeses = YESES;
+    eggClose.classList.remove('run'); eggClose.removeAttribute('style');
+    eggActions.replaceChildren(eggClose);
+    eggQ.textContent = '';
+    eggCounter.textContent = `0/${FLEES}`;
+    egg.hidden = false; void egg.offsetWidth; egg.classList.add('on'); burst(140);
+    eggClose.focus({ preventScroll: true });
+  }
+  function hideEgg() { phase = 'closed'; egg.classList.remove('on'); setTimeout(() => { egg.hidden = true; }, 500); }
+
+  function flee(e) {
+    if (phase !== 'flee' || flees <= 0) return;
+    const now = performance.now(); if (now - lastFlee < 450) return; lastFlee = now;
+    if (e && e.cancelable) e.preventDefault();
+    flees--;
+    if (!eggClose.classList.contains('run')) {
+      const r = eggClose.getBoundingClientRect();
+      eggClose.style.left = r.left + 'px'; eggClose.style.top = r.top + 'px';
+      eggClose.classList.add('run'); void eggClose.offsetWidth;
+    }
+    const x = 12 + Math.random() * Math.max(0, innerWidth - eggClose.offsetWidth - 24);
+    const y = 12 + Math.random() * Math.max(0, innerHeight - eggClose.offsetHeight - 24);
+    eggClose.style.left = x + 'px'; eggClose.style.top = y + 'px';
+    eggCounter.textContent = `${FLEES - flees}/${FLEES}`;
+  }
+  eggClose.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') flee(e); });
+  eggClose.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') flee(e); });
+  eggClose.addEventListener('click', (e) => {
+    if (phase !== 'flee') return;
+    if (flees > 0) { flee(e); return; }
+    startConfirm();
+  });
+
+  function startConfirm() {
+    phase = 'confirm';
+    eggClose.classList.remove('run'); eggClose.removeAttribute('style');
+    const yes = h('button', { class: 'btn primary', type: 'button', text: 'Oui' });
+    const no = h('button', { class: 'btn stay', type: 'button', text: 'Non, je reste' });
+    eggActions.replaceChildren(yes, no);
+    eggQ.textContent = 'Tu es sûr de vouloir fermer ?';
+    eggCounter.textContent = `0/${YESES}`;
+    yes.focus({ preventScroll: true });
+    yes.addEventListener('click', () => {
+      yeses--;
+      eggCounter.textContent = `${YESES - yeses}/${YESES}`;
+      if (yeses <= 0) { setTimeout(hideEgg, 350); return; }
+      const scale = 1 + (YESES - yeses) * 0.45;
+      no.style.fontSize = (16 * scale) + 'px'; no.style.padding = `${9 * scale}px ${16 * scale}px`;
+      eggQ.textContent = 'Vraiment sûr ?';
+    });
+    no.addEventListener('click', () => { eggQ.textContent = 'Merci de rester avec nous !'; });
+  }
+
+  $('#egg-copy').addEventListener('click', async (e) => {
+    const b = e.currentTarget, mail = $('#egg-mail');
+    try { await navigator.clipboard.writeText(mail.textContent); b.textContent = 'Copié'; }
+    catch {
+      const r = document.createRange(); r.selectNodeContents(mail);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Sélectionné';
+    }
+    setTimeout(() => { b.textContent = 'Copier'; }, 1800);
+  });
+
+  /* ---------- données partagées ---------- */
+  // Adresse et clé publique du projet Supabase. Le code à 4 chiffres est vérifié dans la base (voir setup.sql).
+  const SUPABASE = { url: 'https://lhkdhkeffljpufxjmgcz.supabase.co', key: 'sb_publishable_Stju_A49DtXMlr2wcMjyJw_UWXxL7ra' };
+  let store = null;
+
+  function supabaseStore() {
+    const root = SUPABASE.url.replace(/\/$/, '') + '/rest/v1';
+    const headers = { apikey: SUPABASE.key, 'Content-Type': 'application/json' };
+    let onData = null, onError = null, failed = false;
+    async function load() {
+      try {
+        const r = await fetch(root + '/wishlists_public?select=*', { headers, cache: 'no-store' });
+        if (!r.ok) throw new Error(String(r.status));
+        const rows = await r.json();
+        failed = false;
+        onData && onData(rows.map(x => ({ id: x.id, name: x.name, items: x.items, updatedAt: x.updated_at })));
+      } catch (e) { if (!failed && !S.lists) { failed = true; onError && onError(e); } }
+    }
+    async function rpc(fn, args) {
+      const r = await fetch(root + '/rpc/' + fn, { method: 'POST', headers, body: JSON.stringify(args) });
+      if (!r.ok) throw new Error(fn + ' ' + r.status);
+      return r.json();
+    }
+    return {
+      subscribe: (ok, err) => {
+        onData = ok; onError = err; load();
+        setInterval(() => { if (!document.hidden) load(); }, 8000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+      },
+      save: async (id, d, pin) => {
+        const res = await rpc('wl_save', { p_id: id, p_name: d.name, p_items: d.items, p_pin: pin });
+        if (res === 'ok') load();
+        return res;
+      },
+      remove: async (id, pin) => {
+        const res = await rpc('wl_delete', { p_id: id, p_pin: pin });
+        if (res === 'ok') load();
+        return res;
+      },
+      check: (id, pin) => rpc('wl_check', { p_id: id, p_pin: pin }),
+    };
+  }
+
+  function boot() {
+    renderRules(); renderLists(); movePill();
+    let me = null; try { me = localStorage.getItem('xmas-myid'); } catch {}
+    if (!me) { me = 'l-' + uid8() + uid8(); try { localStorage.setItem('xmas-myid', me); } catch {} }
+    S.uid = me; S.canWrite = true;
+    const slow = setTimeout(() => { if (!S.lists) { S.status = 'slow'; renderLists(); } }, 10000);
+    try {
+      store = supabaseStore();
+      S.db = store;
+      let sig = '';
+      store.subscribe((lists) => {
+        clearTimeout(slow);
+        const next = JSON.stringify([...lists].sort((a, b) => a.id.localeCompare(b.id)));
+        if (next === sig && S.lists) return;   // rien n'a changé : on ne redessine pas (garde les champs en cours de saisie)
+        sig = next;
+        S.lists = lists; S.status = 'ready';
+        renderLists();
+        if (S.tab === 'mine' && !S.dirty) openEditor(S.editId);
+      }, () => { clearTimeout(slow); S.status = 'error'; renderLists(); });
+    } catch (e) { clearTimeout(slow); S.status = 'error'; renderLists(); }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
